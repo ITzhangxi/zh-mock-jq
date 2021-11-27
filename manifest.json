@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "zh-mock",
+  "version": "1.0.0",
+  "description": "这是一个为前端程序员API调试的快捷MOCK工具",
+  "icons": {
+    "16": "img/icon.png",
+    "48": "img/icon.png",
+    "128": "img/icon.png"
+  },
+  "background": {
+    "page": "pages/background/index.html"
+  },
+  "browser_action": {
+    "default_icon": "img/icon.png",
+    "default_title": "这是一个为前端程序员API调试的快捷MOCK工具",
+    "default_popup": "pages/popup/index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["plugins/jquery/jquery.min.js", "js/content_script.js"]
+    }
+  ],
+  "permissions": ["tabs", "notifications", "storage"],
+  "web_accessible_resources": ["js/inject.js"],
+  "homepage_url": "https://www.baidu.com",
+  "default_locale": "zh_CN",
+  "devtools_page": "pages/devtools/index.html"
+}
