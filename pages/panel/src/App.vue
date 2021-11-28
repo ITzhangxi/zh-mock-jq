@@ -1,6 +1,9 @@
 <template>
   <el-container class="app">
-    <el-header>欢迎使用 MOCK 数据管理平台</el-header>
+    <el-header>
+      <img src="./assets/logo.png" class="logo" />
+      欢迎使用 MOCK 数据管理平台
+    </el-header>
     <el-container>
       <el-aside width="200px">
         <Dir></Dir>
@@ -50,6 +53,12 @@ export default defineComponent({
     background-color: #d3dce6;
     text-align: center;
     line-height: 200px;
+  }
+  .logo {
+    position: absolute;
+    left: 0;
+    height: 60px;
+    width: 60px;
   }
 }
 </style>
