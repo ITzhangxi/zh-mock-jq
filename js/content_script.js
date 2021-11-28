@@ -12,3 +12,25 @@ function injectJsToDom(path) {
   document.body.appendChild(script);
   //   document.body.innerHTML = "";
 }
+
+window.addEventListener(
+  "message",
+  function (e) {
+    console.log("content_script收到proxy_ajax消息：", e.data);
+    sendMessageToBackground(e.data);
+  },
+  false
+);
+
+sendMessageToBackground("2314");
+// 主动发送消息给后台
+// 要演示此功能，请打开控制台主动执行sendMessageToBackground()
+function sendMessageToBackground(message) {
+  chrome.runtime.sendMessage({
+    greeting: message || "你好，我是content-script呀，我主动发消息给后台！",
+  });
+}
+
+chrome.storage.sync.get(null, function (items) {
+  console.log(items.color, items.age);
+});

@@ -1,0 +1,11 @@
+{
+  "name": "zh-mock",
+  "version": "0.0.1-alpha",
+  "description": "这是一个为前端程序员API调试的快捷MOCK工具",
+  "main": "index.js",
+  "repository": "https://github.com/ITzhangxi/zh-mock-jq.git",
+  "author": "zackxizi <zackxizi@qq.com>",
+  "license": "MIT",
+  "scripts": {},
+  "devDependencies": {}
+}

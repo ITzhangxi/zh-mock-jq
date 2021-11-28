@@ -1,21 +1,8 @@
-const proxy = ah.proxy;
+const proxy = window.ah.proxy;
 
 function hijack(url, { method }) {
   return new Promise((resolve, reject) => {
-    console.log(`拦截请求 ${method} ${url}`);
-    // chrome.runtime.sendMessage(
-    //   window.__EXTENSION_ID__,
-    //   {
-    //     type: "request_mock",
-    //     url,
-    //     method,
-    //   },
-    //   {},
-    //   (response) => {
-    //     if (response) resolve(response);
-    //     else reject();
-    //   }
-    // );
+    window.postMessage({ cmd: `Hello, I am 拦截请求 ${method} ${url}` }, "*");
     resolve({
       response: [1, 2, 3, 4],
     });
