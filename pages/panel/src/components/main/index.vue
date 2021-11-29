@@ -16,7 +16,7 @@ import Search from "./Search.vue";
 
 export default defineComponent({
   components: { Search },
-  name: "main",
+  name: "Main",
   setup() {
     const tableData = reactive([
       {

@@ -1,9 +1,6 @@
 <template>
   <el-container class="app">
-    <el-header>
-      <img src="./assets/logo.png" class="logo" />
-      欢迎使用 MOCK 数据管理平台
-    </el-header>
+    <el-header> 欢迎使用 MOCK 数据管理平台 </el-header>
     <el-container>
       <el-aside width="200px">
         <Dir></Dir>
@@ -15,17 +12,27 @@
       </el-container>
     </el-container>
   </el-container>
+  <Update v-model="updateVisible" />
 </template>
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
+import { useStore } from "vuex";
 import Dir from "@/components/dir";
 import Main from "@/components/main";
+import Update from "@/components/main/Update";
 
 export default defineComponent({
   name: "App",
-  components: { Dir, Main },
+  components: { Dir, Main, Update },
   setup() {
-    return {};
+    const store = useStore();
+    const updateVisible = computed({
+      get: () => store.state.updateVisible,
+      set: (val) => {
+        store.commit("setUpdateVisible", val);
+      },
+    });
+    return { updateVisible };
   },
 });
 </script>
