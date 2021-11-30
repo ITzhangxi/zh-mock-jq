@@ -98,6 +98,15 @@
     console.log(items.color, items.age);
   });
 
-  storageSyncSet({ name: "zhangxi", age: 11 });
+  storageSyncSet({
+    1: {
+      url: "/get/list",
+      method: "GET",
+      enable: true,
+      response: "{resCode:2}",
+      desc: "获取列表",
+    },
+  });
+  // storageSyncRemove(["name", "age"]);
 
 }));

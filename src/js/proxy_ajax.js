@@ -1,11 +1,25 @@
 import { xhrProxy } from "../../plugins/ajax-proxy";
 import { getConfig } from "../utils/postMessage";
 
-function hijack(url, { method }) {
+function proxyApi(url, config) {
   return new Promise((resolve, reject) => {
     getConfig()
       .then((response) => {
-        resolve({ response });
+        response = Object.values(response);
+        const find = response.find((item = {}) => {
+          if (Object.prototype.toString.call(item) !== "[object Object]")
+            return false;
+          return (
+            item.url.toUpperCase() === url.toUpperCase() &&
+            item.method.toUpperCase() === config.method.toUpperCase() &&
+            item.enable
+          );
+        });
+        if (find) {
+          resolve({ response });
+        } else {
+          reject();
+        }
       })
       .catch((error) => reject(error));
   });
@@ -13,7 +27,7 @@ function hijack(url, { method }) {
 
 xhrProxy({
   onRequest: (config, handler) =>
-    hijack(config.url, config)
+    proxyApi(config.url, config)
       .then(({ response }) => {
         return handler.resolve({
           config,
@@ -31,7 +45,7 @@ xhrProxy({
 if (window.fetch) {
   const f = window.fetch;
   window.fetch = (req, config) => {
-    return hijack(req, config)
+    return proxyApi(req, config)
       .then((res) => {
         return new Response(res, {
           headers: new Headers([]),

@@ -1,5 +1,9 @@
 import { createMessage, ORIGIN, ACTION } from "../utils/postMessage";
-import { storageSyncGet, storageSyncSet } from "../utils/storage";
+import {
+  storageSyncGet,
+  storageSyncSet,
+  storageSyncRemove,
+} from "../utils/storage";
 
 document.addEventListener("DOMContentLoaded", function () {
   injectJsToDom("js/proxy_ajax.js");
@@ -48,4 +52,13 @@ chrome.storage.sync.get(null, function (items) {
   console.log(items.color, items.age);
 });
 
-storageSyncSet({ name: "zhangxi", age: 11 });
+storageSyncSet({
+  1: {
+    url: "/get/list",
+    method: "GET",
+    enable: true,
+    response: "{resCode:2}",
+    desc: "获取列表",
+  },
+});
+// storageSyncRemove(["name", "age"]);

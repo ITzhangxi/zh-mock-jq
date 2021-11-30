@@ -25,3 +25,16 @@ export function storageSyncGet(key = null) {
     }
   });
 }
+
+/* 删除数据 */
+export function storageSyncRemove(key) {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.storage.sync.remove(key, function (items) {
+        resolve(items);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
