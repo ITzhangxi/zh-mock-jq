@@ -12,14 +12,17 @@
       label-width="120px"
       class="demo-ruleForm"
     >
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="formModel.name" placeholder="请输入名称" />
-      </el-form-item>
       <el-form-item label="URL" prop="url">
-        <el-input v-model="formModel.url" placeholder="请输入URL" />
+        <el-input v-model="formModel.url" placeholder="请输入api地址" />
       </el-form-item>
       <el-form-item label="method" prop="method">
-        <el-select v-model="formModel.method" placeholder="请输入URL">
+        <el-radio-group v-model="formModel.method">
+          <el-radio label="GET">GET</el-radio>
+          <el-radio label="POST">POST</el-radio>
+          <el-radio label="PUT">PUT</el-radio>
+          <el-radio label="DELETE">DELETE</el-radio>
+        </el-radio-group>
+        <!-- <el-select v-model="formModel.method" placeholder="请选择方法">
           <el-option
             v-for="item in methodsOptions"
             :key="item.value"
@@ -27,13 +30,16 @@
             :value="item.value"
           >
           </el-option>
-        </el-select>
+        </el-select> -->
       </el-form-item>
-      <el-form-item label="生效" prop="url">
+      <el-form-item label="是否生效" prop="enable">
         <el-switch v-model="formModel.enable" />
       </el-form-item>
       <el-form-item label="response" prop="response">
         <EditorVue v-model="formModel.response" />
+      </el-form-item>
+      <el-form-item label="接口描述" prop="desc">
+        <el-input v-model="formModel.desc" placeholder="请输入描述信息" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -104,13 +110,22 @@ export default defineComponent({
 
     const rules = [];
     const formModel = reactive({
-      name: "",
       url: "",
-      method: "",
+      method: "GET",
       enable: true,
-      response: "rqewrqw",
+      response: "{resCode:2}",
+      desc: "",
     });
-    const handleSubmit = () => {};
+    const formRef = ref(null);
+    const handleSubmit = () => {
+      formRef.value.validate((valid) => {
+        console.log("lll", valid);
+        if (valid) {
+          localStorage.setItem("formInfo", JSON.stringify(formModel));
+          console.log(formModel);
+        }
+      });
+    };
     const handleCancel = () => {};
     return {
       dialogVisible,
@@ -120,6 +135,7 @@ export default defineComponent({
       methodsOptions,
       handleSubmit,
       handleCancel,
+      formRef,
     };
   },
 });
