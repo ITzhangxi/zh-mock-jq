@@ -19,7 +19,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["plugins/jquery/jquery.min.js", "js/content_script.js"],
+      "js": ["plugins/jquery.min.js", "js/content_script.js"],
       "run_at": "document_start"
     }
   ],
@@ -27,7 +27,7 @@
   "web_accessible_resources": [
     "js/inject.js",
     "js/proxy_ajax.js",
-    "plugins/ajaxhook/ajaxhook.min.js"
+    "plugins/ajax-proxy"
   ],
   "homepage_url": "https://www.baidu.com",
   "default_locale": "zh_CN",
