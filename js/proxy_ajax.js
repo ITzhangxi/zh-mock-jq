@@ -283,30 +283,45 @@
     return { origin, action, data };
   }
 
-  console.log(f);
-  window.addEventListener(
-    "message",
-    function (e) {
-      const message = e.data || {};
-      debugger;
-      if (message.origin === ORIGIN.CONTENT) {
-        if (message.ACTION === ORIGIN.SEND_CONFIG) {
-          debugger;
+  /**
+   * 获取配置
+   * @param {*} timeout
+   * @returns
+   */
+  function getConfig(timeout = 1000) {
+    return new Promise((resolve, reject) => {
+      try {
+        setTimeout(() => {
+          window.removeEventListener("message", handler);
+          reject("timeout to get config");
+        }, timeout);
+        function handler(e) {
+          const message = e.data || {};
+          if (message.origin === ORIGIN.CONTENT) {
+            if (message.ACTION === ORIGIN.SEND_CONFIG) {
+              resolve(message.data || {});
+              window.removeEventListener("message", handler);
+            }
+          }
         }
+        window.addEventListener("message", handler, false);
+        window.postMessage(
+          createMessage(ORIGIN.PROXY, ACTION.GET_CONFIG),
+          document.location.origin
+        );
+      } catch (error) {
+        reject(error);
       }
-    },
-    false
-  );
+    });
+  }
 
   function hijack(url, { method }) {
     return new Promise((resolve, reject) => {
-      window.postMessage(
-        createMessage(ORIGIN.PROXY, ACTION.GET_CONFIG),
-        document.location.origin
-      );
-      resolve({
-        response: [1, 2, 3, 4],
-      });
+      getConfig()
+        .then((response) => {
+          resolve({ response });
+        })
+        .catch((error) => reject(error));
     });
   }
 

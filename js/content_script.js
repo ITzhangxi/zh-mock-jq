@@ -68,7 +68,6 @@
     function (e) {
       const origin = e.target.origin;
       const message = e.data || {};
-      debugger;
       if (message.origin !== ORIGIN.CONTENT) {
         const action = message.action;
         switch (action) {
