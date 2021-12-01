@@ -19,7 +19,6 @@ const increaseId = (ids) => {
 /* 新增数据 */
 export function storageSyncSet(value) {
   return new Promise((resolve, reject) => {
-    debugger;
     try {
       storageSyncGetOfKey().then((items) => {
         items = items === null ? {} : items;

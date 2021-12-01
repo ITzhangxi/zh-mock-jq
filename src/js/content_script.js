@@ -1,6 +1,7 @@
 import { createMessage, ORIGIN, ACTION } from "../utils/postMessage";
 import {
   storageSyncGet,
+  storageSyncClear,
   storageSyncSet,
   storageSyncRemove,
 } from "../utils/storage";
@@ -48,17 +49,25 @@ function sendMessageToBackground(message) {
   });
 }
 
-chrome.storage.sync.get(null, function (items) {
-  console.log(items.color, items.age);
-});
+// storageSyncClear().then((res) => {
+//   storageSyncGet().then((res) => {
+//     debugger;
+//     console.log(res);
+//   });
+// });
 
-storageSyncSet({
-  1: {
-    url: "/get/list",
-    method: "GET",
-    enable: true,
-    response: "{resCode:2}",
-    desc: "获取列表",
-  },
+storageSyncGet().then((res) => {
+  debugger;
+  console.log(res);
 });
-// storageSyncRemove(["name", "age"]);
+// storageSyncClear().then(() => {
+// for (let index = 0; index < 1; index++) {
+//   storageSyncSet({
+//     url: `/get/list/${index}`,
+//     method: "GET",
+//     enable: true,
+//     response: `{code:0,msg:'success',data:[]}`,
+//     desc: "这是一个描述" + index,
+//   });
+// }
+// });

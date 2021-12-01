@@ -23,27 +23,21 @@
     return { origin, action, data };
   }
 
-  /* 获取数据 */
-  function storageSyncSet(data = {}) {
-    return new Promise((resolve, reject) => {
-      if (Object.prototype.toString.call(data) !== "[object Object]")
-        reject("save data must object");
-      try {
-        chrome.storage.sync.set(data, function (items) {
-          resolve(items);
-        });
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
+  const isObject = (target) =>
+    Object.prototype.toString.call(target) === "[object Object]";
 
-  /* 保存数据 */
+  /* 查询数据 value */
   function storageSyncGet(key = null) {
     return new Promise((resolve, reject) => {
       try {
-        chrome.storage.sync.get(key, function (items) {
-          resolve(items);
+        // eslint-disable-next-line no-undef
+        chrome.storage.sync.get(key, (items) => {
+          if (isObject(items)) {
+            if (Object.keys(items).length) {
+              return resolve(Object.values(items));
+            }
+          }
+          resolve(null);
         });
       } catch (error) {
         reject(error);
@@ -94,19 +88,27 @@
     });
   }
 
-  chrome.storage.sync.get(null, function (items) {
-    console.log(items.color, items.age);
-  });
+  // storageSyncClear().then((res) => {
+  //   storageSyncGet().then((res) => {
+  //     debugger;
+  //     console.log(res);
+  //   });
+  // });
 
-  storageSyncSet({
-    1: {
-      url: "/get/list",
-      method: "GET",
-      enable: true,
-      response: "{resCode:2}",
-      desc: "获取列表",
-    },
+  storageSyncGet().then((res) => {
+    debugger;
+    console.log(res);
   });
-  // storageSyncRemove(["name", "age"]);
+  // storageSyncClear().then(() => {
+  // for (let index = 0; index < 1; index++) {
+  //   storageSyncSet({
+  //     url: `/get/list/${index}`,
+  //     method: "GET",
+  //     enable: true,
+  //     response: `{code:0,msg:'success',data:[]}`,
+  //     desc: "这是一个描述" + index,
+  //   });
+  // }
+  // });
 
 }));

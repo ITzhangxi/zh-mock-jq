@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
-    title="Tips"
-    :before-close="handleClose"
-    class="update"
-  >
+  <el-dialog v-model="dialogVisible" title="Tips" class="update">
     <el-form
       ref="formRef"
       :model="formModel"
@@ -39,7 +34,11 @@
         <EditorVue v-model="formModel.response" />
       </el-form-item>
       <el-form-item label="接口描述" prop="desc">
-        <el-input v-model="formModel.desc" placeholder="请输入描述信息" />
+        <el-input
+          type="textarea"
+          v-model="formModel.desc"
+          placeholder="请输入描述信息"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -52,9 +51,9 @@
 </template>
 <script>
 import { defineComponent, reactive, ref, watch } from "vue";
-import { ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
+import { storageSyncSet, storageSyncGet, storageSyncUpdate } from "@/utils";
 import EditorVue from "./Editor.vue";
-EditorVue;
 
 const methodsOptions = [
   {
@@ -79,6 +78,7 @@ export default defineComponent({
   name: "Update",
   props: {
     modelValue: Boolean,
+    id: Number,
   },
   emits: ["update:modelValue"],
   components: { EditorVue },
@@ -88,6 +88,18 @@ export default defineComponent({
       () => props.modelValue,
       (val) => {
         dialogVisible.value = val;
+        if (props.id) {
+          storageSyncGet(props.id)
+            .then((res = {}) => {
+              formModel.url = res.url;
+              formModel.method = res.method;
+              formModel.enable = res.enable;
+              formModel.response = res.response;
+              formModel.desc = res.desc;
+            })
+            .then(() => ElMessage.success("查询成功"))
+            .catch((error) => ElMessage.error("查询失败：" + error));
+        }
       },
       { immediate: true }
     );
@@ -97,16 +109,6 @@ export default defineComponent({
         emit("update:modelValue", val);
       }
     );
-
-    const handleClose = (done) => {
-      ElMessageBox.confirm("Are you sure to close this dialog?")
-        .then(() => {
-          done();
-        })
-        .catch(() => {
-          // catch error
-        });
-    };
 
     const rules = [];
     const formModel = reactive({
@@ -119,17 +121,28 @@ export default defineComponent({
     const formRef = ref(null);
     const handleSubmit = () => {
       formRef.value.validate((valid) => {
-        console.log("lll", valid);
         if (valid) {
-          localStorage.setItem("formInfo", JSON.stringify(formModel));
-          console.log(formModel);
+          if (props.id) {
+            storageSyncUpdate(props.id, formModel)
+              .then(() => {
+                ElMessage.success("操作成功");
+                dialogVisible.value = false;
+              })
+              .catch((error) => ElMessage.error("操作失败：" + error));
+          } else {
+            storageSyncSet(formModel)
+              .then(() => {
+                ElMessage.success("操作成功");
+                dialogVisible.value = false;
+              })
+              .catch((error) => ElMessage.error("操作失败：" + error));
+          }
         }
       });
     };
     const handleCancel = () => {};
     return {
       dialogVisible,
-      handleClose,
       formModel,
       rules,
       methodsOptions,
