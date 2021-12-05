@@ -20,13 +20,19 @@ export default defineComponent({
     let editorIns;
     nextTick(() => {
       editorIns = monaco.editor.create(editorRef.value, {
-        language: "javascript",
+        language: "json",
         value: props.modelValue,
         theme: "vs-dark",
       });
 
       editorIns.onDidChangeModelContent(() => {
-        emit("update:modelValue", editorIns.getValue());
+        let val = "";
+        try {
+          val = JSON.parse(editorIns.getValue());
+        } catch (error) {
+          val = editorIns.getValue();
+        }
+        emit("update:modelValue", val);
       });
     });
 

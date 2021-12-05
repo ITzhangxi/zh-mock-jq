@@ -1,7 +1,7 @@
 (function (factory) {
-  typeof define === 'function' && define.amd ? define(factory) :
-  factory();
-})((function () { 'use strict';
+  typeof define === "function" && define.amd ? define(factory) : factory();
+})(function () {
+  "use strict";
 
   function t(t, r) {
     var e = {};
@@ -104,7 +104,9 @@
     function r(t) {
       l.call(this, t);
     }
-    return (r.prototype = Object.create(l.prototype)), (r.prototype.next = t), r;
+    return (
+      (r.prototype = Object.create(l.prototype)), (r.prototype.next = t), r
+    );
   }
   l.prototype = Object.create({
     resolve: function (t) {
@@ -315,27 +317,31 @@
     });
   }
 
+  function proxy(url, config, resolve, reject) {
+    return getConfig()
+      .then((response) => {
+        response = Object.values(response);
+        const find = response.find((item = {}) => {
+          if (Object.prototype.toString.call(item) !== "[object Object]")
+            return false;
+          return (
+            item.url.toUpperCase() === url.toUpperCase() &&
+            item.method.toUpperCase() === config.method.toUpperCase() &&
+            item.enable
+          );
+        });
+        if (find) {
+          resolve({ response: find.response });
+        } else {
+          reject();
+        }
+      })
+      .catch((error) => reject(error));
+  }
+
   function proxyApi(url, config) {
     return new Promise((resolve, reject) => {
-      getConfig()
-        .then((response) => {
-          response = Object.values(response);
-          const find = response.find((item = {}) => {
-            if (Object.prototype.toString.call(item) !== "[object Object]")
-              return false;
-            return (
-              item.url.toUpperCase() === url.toUpperCase() &&
-              item.method.toUpperCase() === config.method.toUpperCase() &&
-              item.enable
-            );
-          });
-          if (find) {
-            resolve({ response });
-          } else {
-            reject();
-          }
-        })
-        .catch((error) => reject(error));
+      proxy(url, config, resolve, reject);
     });
   }
 
@@ -360,11 +366,13 @@
     const f = window.fetch;
     window.fetch = (req, config) => {
       return proxyApi(req, config)
-        .then((res) => {
-          return new Response(res, {
-            headers: new Headers([]),
+        .then(({ response }) => {
+          return {
+            config,
             status: 200,
-          });
+            headers: [],
+            response,
+          };
         })
         .catch((e) => {
           console.error(e);
@@ -372,5 +380,4 @@
         });
     };
   }
-
-}));
+});

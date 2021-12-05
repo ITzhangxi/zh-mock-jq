@@ -2,9 +2,9 @@
   <el-container class="app">
     <el-header> 欢迎使用 MOCK 数据管理平台 </el-header>
     <el-container>
-      <el-aside width="200px">
+      <!-- <el-aside width="200px">
         <Dir></Dir>
-      </el-aside>
+      </el-aside> -->
       <el-container>
         <el-main>
           <Main />
@@ -12,16 +12,15 @@
       </el-container>
     </el-container>
   </el-container>
-  <!-- <Update v-model="updateVisible" /> -->
 </template>
 <script>
 import { defineComponent } from "vue";
 import Dir from "@/components/dir";
 import Main from "@/components/main";
-// import Update from "@/components/main/Update";
 
 export default defineComponent({
   name: "App",
+  // eslint-disable-next-line vue/no-unused-components
   components: { Dir, Main },
   setup() {
     return {};
@@ -39,6 +38,7 @@ export default defineComponent({
   top: 0;
   right: 0;
   bottom: 0;
+  overflow: auto;
   .el-header {
     background-color: #1e2c46;
     color: #fff;

@@ -31,13 +31,29 @@
     return new Promise((resolve, reject) => {
       try {
         // eslint-disable-next-line no-undef
+        if (![null, undefined].includes(key)) key = key + "";
+        // eslint-disable-next-line no-undef
         chrome.storage.sync.get(key, (items) => {
           if (isObject(items)) {
             if (Object.keys(items).length) {
+              if (key) {
+                return resolve(Object.values(items)[0]);
+              }
               return resolve(Object.values(items));
+            } else {
+              if (key) {
+                resolve(null);
+              } else {
+                resolve([]);
+              }
+            }
+          } else {
+            if (key) {
+              resolve(null);
+            } else {
+              resolve([]);
             }
           }
-          resolve(null);
         });
       } catch (error) {
         reject(error);
@@ -90,15 +106,28 @@
 
   // storageSyncClear().then((res) => {
   //   storageSyncGet().then((res) => {
-  //     debugger;
   //     console.log(res);
   //   });
   // });
+  // storageSyncClear();
+  // storageSyncRemove(0);
 
   storageSyncGet().then((res) => {
-    debugger;
     console.log(res);
   });
+  // storageSyncGet(0).then((res) => {
+  //   console.log(res);
+  // });
+  // storageSyncUpdate(0, {
+  //   createTime: 1638383096336,
+  //   desc: "这是一个描述1234",
+  //   enable: true,
+  //   id: 0,
+  //   method: "GET",
+  //   response: "{code:0,msg:'success',data:[]}",
+  //   updateTime: 1638383096336,
+  //   url: "/get/list/0",
+  // });
   // storageSyncClear().then(() => {
   // for (let index = 0; index < 1; index++) {
   //   storageSyncSet({

@@ -4,6 +4,7 @@ import {
   storageSyncClear,
   storageSyncSet,
   storageSyncRemove,
+  storageSyncUpdate,
 } from "../utils/storage";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -51,15 +52,28 @@ function sendMessageToBackground(message) {
 
 // storageSyncClear().then((res) => {
 //   storageSyncGet().then((res) => {
-//     debugger;
 //     console.log(res);
 //   });
 // });
+// storageSyncClear();
+// storageSyncRemove(0);
 
 storageSyncGet().then((res) => {
-  debugger;
   console.log(res);
 });
+// storageSyncGet(0).then((res) => {
+//   console.log(res);
+// });
+// storageSyncUpdate(0, {
+//   createTime: 1638383096336,
+//   desc: "这是一个描述1234",
+//   enable: true,
+//   id: 0,
+//   method: "GET",
+//   response: "{code:0,msg:'success',data:[]}",
+//   updateTime: 1638383096336,
+//   url: "/get/list/0",
+// });
 // storageSyncClear().then(() => {
 // for (let index = 0; index < 1; index++) {
 //   storageSyncSet({

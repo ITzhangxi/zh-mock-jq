@@ -50,10 +50,9 @@ export function storageSyncSet(value) {
 export function storageSyncUpdate(key, value) {
   return new Promise((resolve, reject) => {
     try {
-      storageSyncGetOfKey(key).then((res) => {
+      storageSyncGet(key).then((res) => {
         if (isObject(res) && Object.keys(res).length) {
           const data = {};
-          data[key] = value;
           data[key] = { ...res, ...value, id: key, updateTime: Date.now() };
           // eslint-disable-next-line no-undef
           chrome.storage.sync.set(data, () => {
@@ -93,13 +92,29 @@ export function storageSyncGet(key = null) {
   return new Promise((resolve, reject) => {
     try {
       // eslint-disable-next-line no-undef
+      if (![null, undefined].includes(key)) key = key + "";
+      // eslint-disable-next-line no-undef
       chrome.storage.sync.get(key, (items) => {
         if (isObject(items)) {
           if (Object.keys(items).length) {
+            if (key) {
+              return resolve(Object.values(items)[0]);
+            }
             return resolve(Object.values(items));
+          } else {
+            if (key) {
+              resolve(null);
+            } else {
+              resolve([]);
+            }
+          }
+        } else {
+          if (key) {
+            resolve(null);
+          } else {
+            resolve([]);
           }
         }
-        resolve(null);
       });
     } catch (error) {
       reject(error);
@@ -111,6 +126,8 @@ export function storageSyncGet(key = null) {
 export function storageSyncRemove(key) {
   return new Promise((resolve, reject) => {
     try {
+      // eslint-disable-next-line no-undef
+      if (![null, undefined].includes(key)) key = key + "";
       // eslint-disable-next-line no-undef
       chrome.storage.sync.remove(key, (items) => {
         resolve(items);
