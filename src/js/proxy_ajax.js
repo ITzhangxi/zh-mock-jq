@@ -4,12 +4,35 @@ import { getConfig } from "../utils/postMessage";
 function proxy(url, config, resolve, reject) {
   return getConfig()
     .then((response) => {
+      let pathname = "",
+        protocol = "",
+        port = "",
+        origin = "",
+        host = "",
+        hostname = "",
+        urlIns = "";
+      if (url.startsWith("/")) {
+        urlIns = document.location;
+        pathname = url;
+      }
+      try {
+        urlIns = new URL(url);
+      } catch (error) {}
+      if (urlIns) {
+        pathname = pathname || urlIns.pathname;
+        protocol = urlIns.protocol;
+        port =
+          urlIns.port === "" ? (protocol === "https" ? 443 : 80) : urlIns.port;
+        origin = urlIns.origin;
+        host = urlIns.host;
+        hostname = urlIns.hostname;
+      }
       response = Object.values(response);
       const find = response.find((item = {}) => {
         if (Object.prototype.toString.call(item) !== "[object Object]")
           return false;
         return (
-          item.url.toUpperCase() === url.toUpperCase() &&
+          item.url.toUpperCase() === pathname.toUpperCase() &&
           item.method.toUpperCase() === config.method.toUpperCase() &&
           item.enable
         );
@@ -36,7 +59,7 @@ xhrProxy({
         return handler.resolve({
           config,
           status: 200,
-          headers: [],
+          headers: new Headers(config.headers || {}),
           response,
         });
       })
@@ -51,16 +74,13 @@ if (window.fetch) {
   window.fetch = (req, config) => {
     return proxyApi(req, config)
       .then(({ response }) => {
-        return {
-          config,
+        return new Response(response, {
+          headers: new Headers(config.headers || {}),
           status: 200,
-          headers: [],
-          response,
-        };
+        });
       })
       .catch((e) => {
-        console.error(e);
-        f(req, config);
+        return f(req, config);
       });
   };
 }

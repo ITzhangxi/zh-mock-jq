@@ -1,7 +1,7 @@
 (function (factory) {
-  typeof define === "function" && define.amd ? define(factory) : factory();
-})(function () {
-  "use strict";
+  typeof define === 'function' && define.amd ? define(factory) :
+  factory();
+})((function () { 'use strict';
 
   function t(t, r) {
     var e = {};
@@ -104,9 +104,7 @@
     function r(t) {
       l.call(this, t);
     }
-    return (
-      (r.prototype = Object.create(l.prototype)), (r.prototype.next = t), r
-    );
+    return (r.prototype = Object.create(l.prototype)), (r.prototype.next = t), r;
   }
   l.prototype = Object.create({
     resolve: function (t) {
@@ -320,12 +318,27 @@
   function proxy(url, config, resolve, reject) {
     return getConfig()
       .then((response) => {
+        let pathname = "",
+          protocol = "",
+          urlIns = "";
+        if (url.startsWith("/")) {
+          urlIns = document.location;
+          pathname = url;
+        }
+        try {
+          urlIns = new URL(url);
+        } catch (error) {}
+        if (urlIns) {
+          pathname = pathname || urlIns.pathname;
+          protocol = urlIns.protocol;
+          urlIns.port === "" ? (protocol === "https" ? 443 : 80) : urlIns.port;
+        }
         response = Object.values(response);
         const find = response.find((item = {}) => {
           if (Object.prototype.toString.call(item) !== "[object Object]")
             return false;
           return (
-            item.url.toUpperCase() === url.toUpperCase() &&
+            item.url.toUpperCase() === pathname.toUpperCase() &&
             item.method.toUpperCase() === config.method.toUpperCase() &&
             item.enable
           );
@@ -352,7 +365,7 @@
           return handler.resolve({
             config,
             status: 200,
-            headers: [],
+            headers: new Headers(config.headers || {}),
             response,
           });
         })
@@ -367,17 +380,15 @@
     window.fetch = (req, config) => {
       return proxyApi(req, config)
         .then(({ response }) => {
-          return {
-            config,
+          return new Response(response, {
+            headers: new Headers(config.headers || {}),
             status: 200,
-            headers: [],
-            response,
-          };
+          });
         })
         .catch((e) => {
-          console.error(e);
-          f(req, config);
+          return f(req, config);
         });
     };
   }
-});
+
+}));

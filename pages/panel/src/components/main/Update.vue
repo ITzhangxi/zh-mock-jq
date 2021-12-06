@@ -70,7 +70,7 @@
 <script>
 import { defineComponent, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { storageSyncSet, storageSyncGet, storageSyncUpdate } from "@/utils";
+import { storageSyncSet, storageSyncUpdate } from "@/utils";
 import EditorVue from "./Editor.vue";
 
 const methodsOptions = [
@@ -97,37 +97,15 @@ export default defineComponent({
   props: {
     modelValue: Boolean,
     id: Number,
+    itemData: {
+      type: Object,
+      default: () => {},
+    },
   },
   emits: ["update:modelValue"],
   components: { EditorVue },
   setup(props, { emit }) {
     const dialogVisible = ref(false);
-    watch(
-      () => props.modelValue,
-      (val) => {
-        dialogVisible.value = val;
-        if (props.id !== "") {
-          storageSyncGet(props.id)
-            .then((res = {}) => {
-              formModel.domain = res.domain;
-              formModel.url = res.url;
-              formModel.method = res.method;
-              formModel.enable = res.enable;
-              formModel.response = res.response;
-              formModel.desc = res.desc;
-            })
-            .catch((error) => ElMessage.error("查询失败：" + error));
-        }
-      },
-      { immediate: true }
-    );
-    watch(
-      () => dialogVisible.value,
-      (val) => {
-        emit("update:modelValue", val);
-        if (!val) formRef.value.resetFields();
-      }
-    );
 
     const rules = [];
     const formModel = reactive({
@@ -167,6 +145,27 @@ export default defineComponent({
     const handleCancel = () => {
       dialogVisible.value = false;
     };
+
+    watch(
+      () => props.modelValue,
+      (val) => {
+        dialogVisible.value = val;
+        formModel.domain = props.itemData.domain;
+        formModel.url = props.itemData.url;
+        formModel.method = props.itemData.method;
+        formModel.enable = props.itemData.enable;
+        formModel.response = props.itemData.response;
+        formModel.desc = props.itemData.desc;
+      },
+      { immediate: true }
+    );
+    watch(
+      () => dialogVisible.value,
+      (val) => {
+        emit("update:modelValue", val);
+        if (!val) formRef.value.resetFields();
+      }
+    );
     return {
       dialogVisible,
       formModel,

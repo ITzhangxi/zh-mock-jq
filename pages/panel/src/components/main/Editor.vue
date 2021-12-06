@@ -2,7 +2,7 @@
   <div class="editor" ref="editorRef"></div>
 </template>
 <script>
-import { defineComponent, nextTick, ref } from "vue";
+import { defineComponent, nextTick, ref, watch } from "vue";
 import * as monaco from "monaco-editor";
 
 export default defineComponent({
@@ -14,27 +14,42 @@ export default defineComponent({
     },
   },
   emits: ["update:modelValue"],
-  // eslint-disable-next-line no-unused-vars
   setup(props, { emit }) {
     const editorRef = ref(null);
     let editorIns;
+    let edit = false;
     nextTick(() => {
       editorIns = monaco.editor.create(editorRef.value, {
         language: "json",
-        value: props.modelValue,
+        value: "",
         theme: "vs-dark",
       });
 
       editorIns.onDidChangeModelContent(() => {
         let val = "";
         try {
-          val = JSON.parse(editorIns.getValue());
+          val = editorIns.getValue();
         } catch (error) {
           val = editorIns.getValue();
         }
+        edit = true;
         emit("update:modelValue", val);
       });
     });
+    watch(
+      () => props.modelValue,
+      (val) => {
+        nextTick(() => {
+          if (!edit) {
+            editorIns.setValue(val);
+          }
+          edit = false;
+        });
+      },
+      {
+        immediate: true,
+      }
+    );
 
     return { editorRef, editorIns };
   },
