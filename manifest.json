@@ -23,7 +23,7 @@
       "run_at": "document_start"
     }
   ],
-  "permissions": ["tabs", "notifications", "storage"],
+  "permissions": ["storage"],
   "web_accessible_resources": ["js/inject.js", "js/proxy_ajax.js"],
   "homepage_url": "https://www.baidu.com",
   "default_locale": "zh_CN",

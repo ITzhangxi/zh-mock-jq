@@ -50,8 +50,9 @@ window.addEventListener(
 // storageSyncRemove(0);
 
 storageSyncGet().then((res) => {
-  console.log(res);
+  console.log("storageSyncGet---->", res);
 });
+
 // storageSyncGet(0).then((res) => {
 //   console.log(res);
 // });

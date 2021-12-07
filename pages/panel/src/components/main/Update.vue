@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="Tips" class="update">
+  <el-dialog v-model="dialogVisible" title="Tips" class="update" width="80%">
     <el-form
       ref="formRef"
       :model="formModel"

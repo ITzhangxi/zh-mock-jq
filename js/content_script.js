@@ -30,7 +30,6 @@
   function storageSyncGet(key = null) {
     return new Promise((resolve, reject) => {
       try {
-        // eslint-disable-next-line no-undef
         if (![null, undefined].includes(key)) key = key + "";
         // eslint-disable-next-line no-undef
         chrome.storage.sync.get(key, (items) => {
@@ -104,8 +103,9 @@
   // storageSyncRemove(0);
 
   storageSyncGet().then((res) => {
-    console.log(res);
+    console.log("storageSyncGet---->", res);
   });
+
   // storageSyncGet(0).then((res) => {
   //   console.log(res);
   // });

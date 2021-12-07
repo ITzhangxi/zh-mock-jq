@@ -37,6 +37,7 @@ function proxy(url, config, resolve, reject) {
           item.enable
         );
       });
+
       if (find) {
         resolve({ response: find.response });
       } else {

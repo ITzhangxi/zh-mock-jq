@@ -11,7 +11,7 @@ const increaseId = (ids) => {
         }
       })
       .filter((id) => typeof id === "number")
-      .sort();
+      .sort((a, b) => a - b);
     if (idsNum.length) return ++idsNum.slice(-1)[0];
   }
   return 0;
@@ -50,10 +50,16 @@ export function storageSyncSet(value) {
 export function storageSyncUpdate(key, value) {
   return new Promise((resolve, reject) => {
     try {
-      storageSyncGet(key).then((res) => {
+      debugger;
+      storageSyncGetOfKey(key).then((res) => {
         if (isObject(res) && Object.keys(res).length) {
           const data = {};
-          data[key] = { ...res, ...value, id: key, updateTime: Date.now() };
+          data[key] = {
+            ...res[key],
+            ...value,
+            id: key,
+            updateTime: Date.now(),
+          };
           // eslint-disable-next-line no-undef
           chrome.storage.sync.set(data, () => {
             resolve(data);
@@ -72,6 +78,7 @@ export function storageSyncUpdate(key, value) {
 export function storageSyncGetOfKey(key = null) {
   return new Promise((resolve, reject) => {
     try {
+      if (![null, undefined].includes(key)) key = key + "";
       // eslint-disable-next-line no-undef
       chrome.storage.sync.get(key, (items) => {
         if (isObject(items)) {
@@ -91,7 +98,6 @@ export function storageSyncGetOfKey(key = null) {
 export function storageSyncGet(key = null) {
   return new Promise((resolve, reject) => {
     try {
-      // eslint-disable-next-line no-undef
       if (![null, undefined].includes(key)) key = key + "";
       // eslint-disable-next-line no-undef
       chrome.storage.sync.get(key, (items) => {
@@ -126,8 +132,8 @@ export function storageSyncGet(key = null) {
 export function storageSyncRemove(key) {
   return new Promise((resolve, reject) => {
     try {
-      // eslint-disable-next-line no-undef
       if (![null, undefined].includes(key)) key = key + "";
+      // eslint-disable-next-line no-undef
       chrome.storage.sync.remove(key, (items) => {
         resolve(items);
       });
