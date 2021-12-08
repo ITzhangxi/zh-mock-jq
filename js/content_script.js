@@ -23,6 +23,7 @@
     return { origin, action, data };
   }
 
+  // 判断是不是Object
   const isObject = (target) =>
     Object.prototype.toString.call(target) === "[object Object]";
 

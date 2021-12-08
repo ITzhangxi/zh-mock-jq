@@ -1,21 +1,5 @@
-const isObject = (target) =>
-  Object.prototype.toString.call(target) === "[object Object]";
-const increaseId = (ids) => {
-  if (Array.isArray(ids)) {
-    const idsNum = ids
-      .map((id) => {
-        try {
-          return parseInt(id);
-        } catch (error) {
-          storageSyncRemove(id);
-        }
-      })
-      .filter((id) => typeof id === "number")
-      .sort((a, b) => a - b);
-    if (idsNum.length) return ++idsNum.slice(-1)[0];
-  }
-  return 0;
-};
+import { increaseId, isObject } from "./utils";
+
 /* 新增数据 */
 export function storageSyncSet(value) {
   return new Promise((resolve, reject) => {
