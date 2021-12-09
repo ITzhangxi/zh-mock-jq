@@ -61,75 +61,114 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    injectJsToDom("js/proxy_ajax.js");
-  });
+  function init() {
+    document.addEventListener("DOMContentLoaded", function () {
+      injectJsToDom("js/proxy_ajax.js");
+    });
 
-  function injectJsToDom(path) {
-    path = path || "js/inject.js";
-    var script = document.createElement("script");
-    script.setAttribute("type", "text/javascript");
-    script.src = chrome.extension.getURL(path);
-    document.body.appendChild(script);
-  }
+    function injectJsToDom(path) {
+      path = path || "js/inject.js";
+      var script = document.createElement("script");
+      script.setAttribute("type", "text/javascript");
+      script.src = chrome.extension.getURL(path);
+      document.body.appendChild(script);
+    }
 
-  window.addEventListener(
-    "message",
-    function (e) {
-      const origin = e.target.origin;
-      const message = e.data || {};
-      if (message.origin !== ORIGIN.CONTENT) {
-        const action = message.action;
-        switch (action) {
-          case ACTION.GET_CONFIG: {
-            storageSyncGet(null).then((data) => {
-              window.postMessage(
-                createMessage(ORIGIN.CONTENT, ACTION.SEND_CONFIG, data),
-                origin
-              );
-            });
+    window.addEventListener(
+      "message",
+      function (e) {
+        const origin = e.target.origin;
+        const message = e.data || {};
+        if (message.origin !== ORIGIN.CONTENT) {
+          const action = message.action;
+          switch (action) {
+            case ACTION.GET_CONFIG: {
+              storageSyncGet(null).then((data) => {
+                window.postMessage(
+                  createMessage(ORIGIN.CONTENT, ACTION.SEND_CONFIG, data),
+                  origin
+                );
+              });
+            }
           }
         }
-      }
-    },
-    false
-  );
+      },
+      false
+    );
+  }
+  init();
 
-  // storageSyncClear().then((res) => {
-  //   storageSyncGet().then((res) => {
-  //     console.log(res);
-  //   });
-  // });
-  // storageSyncClear();
-  // storageSyncRemove(0);
+  async function run() {
+    // await getTables()
+    //   .then((table) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await createTable("testTable")
+    //   .then((res) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await insertStorageDataToTable("testTable", { a: 1, d: 2 })
+    //   .then((res) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await updateStorageDataToTable("testTable", 1, { a: "a", c: "3" })
+    //   .then((res) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await delSoftIdToTable("testTable", 1)
+    //   .then((res) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await delSyncIdToTable("testTable", 1)
+    //   .then((res) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await clearTableData("testTable");
+    // for (let i = 0; i <= 1000; i++) {
+    //   await insertStorageDataToTable("testTable", { i });
+    // }
+    // await insertStorageDataToTable("testTable", { i: 89 });
+    // await getTableDataForQuery("testTable")
+    //   .then((res) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await getTableDataPage("testTable", { current: 9, pageSize: 10 })
+    //   .then((res) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+    // await getTables()
+    //   .then((table) => {
+    //     debugger;
+    //   })
+    //   .catch((error) => {
+    //     debugger;
+    //   });
+  }
 
-  storageSyncGet().then((res) => {
-    console.log("storageSyncGet---->", res);
-  });
-
-  // storageSyncGet(0).then((res) => {
-  //   console.log(res);
-  // });
-  // storageSyncUpdate(0, {
-  //   createTime: 1638383096336,
-  //   desc: "这是一个描述1234",
-  //   enable: true,
-  //   id: 0,
-  //   method: "GET",
-  //   response: "{code:0,msg:'success',data:[]}",
-  //   updateTime: 1638383096336,
-  //   url: "/get/list/0",
-  // });
-  // storageSyncClear().then(() => {
-  // for (let index = 0; index < 1; index++) {
-  //   storageSyncSet({
-  //     url: `/get/list/${index}`,
-  //     method: "GET",
-  //     enable: true,
-  //     response: `{code:0,msg:'success',data:[]}`,
-  //     desc: "这是一个描述" + index,
-  //   });
-  // }
-  // });
+  run();
 
 }));

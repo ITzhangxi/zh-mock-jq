@@ -14,7 +14,7 @@ import {
 
 /* 判断表不存在 */
 export function tableNotExists(tableName) {
-  return Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     storageSyncGet(tableName)
       .then((res) => {
         if (res) {
@@ -29,7 +29,7 @@ export function tableNotExists(tableName) {
 
 /* 判断表存在 */
 export function tableExists(tableName) {
-  return Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     storageSyncGet(tableName)
       .then((table) => {
         if (table) {
@@ -69,6 +69,15 @@ export function delTable(tableName) {
   });
 }
 
+/* 获取所有的表 */
+export function getTables() {
+  return new Promise((resolve, reject) => {
+    storageSyncGet()
+      .then((tables) => resolve(tables))
+      .catch((error) => reject(error));
+  });
+}
+
 /* 更新整张表数据 */
 export function updateStorageTable(tableName, data) {
   return new Promise((resolve, reject) => {
@@ -84,7 +93,7 @@ export function updateStorageTable(tableName, data) {
 
 /* 获取整张表数据 */
 export function getTableData(tableName) {
-  return Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     storageSyncGet(tableName)
       .then((table) => {
         if (table) {
@@ -94,6 +103,15 @@ export function getTableData(tableName) {
         }
       })
       .catch((err) => reject(err));
+  });
+}
+
+/* 清除表中的数据 */
+export function clearTableData(tableName) {
+  return new Promise((resolve, reject) => {
+    updateStorageTable(tableName, [])
+      .then((res) => resolve(res))
+      .catch((error) => reject(error));
   });
 }
 
@@ -112,6 +130,7 @@ export function insertStorageDataToTable(tableName, data) {
           updateTime: Date.now(),
         };
         Object.assign(data, mergeData);
+        allData.push(data);
         updateStorageTable(tableName, allData)
           .then((res) => resolve(res))
           .catch((err) => reject(err));
@@ -122,28 +141,32 @@ export function insertStorageDataToTable(tableName, data) {
 
 /* 根据ID更新表数据 */
 export function updateStorageDataToTable(tableName, id, data) {
-  getTableData((allData) => {
-    /* 判断 数据是否存在 */
-    const { itemData } = findIdFromArr(id, allData);
-    if (!itemData) return reject(`id data ${id} does not exist`);
+  return new Promise((resolve, reject) => {
+    getTableData(tableName)
+      .then(({ [tableName]: allData }) => {
+        /* 判断 数据是否存在 */
+        const { itemData } = findIdFromArr(id, allData);
+        if (!itemData) return reject(`id data ${id} does not exist`);
 
-    const mergeData = {
-      id, // 避免 id 被人为修改
-      updateTime: Date.now(),
-    };
+        const mergeData = {
+          id, // 避免 id 被人为修改
+          updateTime: Date.now(),
+        };
 
-    Object.assign(itemData, data, mergeData);
-    updateStorageTable(tableName, allData)
-      .then((res) => resolve(res))
+        Object.assign(itemData, data, mergeData);
+        updateStorageTable(tableName, allData)
+          .then((res) => resolve(res))
+          .catch((err) => reject(err));
+      })
       .catch((err) => reject(err));
-  }).catch((err) => reject(err));
+  });
 }
 
 /* 根据ID软删除数据 */
 export function delSoftIdToTable(tableName, id) {
   return new Promise((resolve, reject) => {
     getTableData(tableName)
-      .then((allData) => {
+      .then(({ [tableName]: allData }) => {
         const { index, itemData } = findIdFromArr(id, allData);
         if (index === undefined) return reject(`id data ${id} does not exist`);
 
@@ -153,7 +176,7 @@ export function delSoftIdToTable(tableName, id) {
           del: true,
         };
 
-        Object.assign(itemData, data, mergeData);
+        Object.assign(itemData, mergeData);
         updateStorageTable(tableName, allData)
           .then((res) => resolve(res))
           .catch((err) => reject(err));
@@ -166,7 +189,7 @@ export function delSoftIdToTable(tableName, id) {
 export function delSyncIdToTable(tableName, id) {
   return new Promise((resolve, reject) => {
     getTableData(tableName)
-      .then((allData) => {
+      .then(({ [tableName]: allData }) => {
         const { index } = findIdFromArr(id, allData);
         if (index === undefined) return reject(`id data ${id} does not exist`);
         allData.splice(index, 1);
@@ -179,10 +202,11 @@ export function delSyncIdToTable(tableName, id) {
 }
 
 /* 根据条件获取数据 */
-export function getTableDataForQuery(tableName, query = null) {
+export function getTableDataForQuery(tableName, options = {}) {
+  const { query = null } = options;
   return new Promise((resolve, reject) => {
     getTableData(tableName)
-      .then((allData) => {
+      .then(({ [tableName]: allData }) => {
         if (isObject(query)) {
           const keys = Object.keys(query);
           allData = allData.reduce((pre, item) => {
@@ -203,15 +227,15 @@ export function getTableDataForQuery(tableName, query = null) {
 /* 分页获取数据 || 支持搜索分页获取数据 */
 export function getTableDataPage(
   tableName,
-  { current = 1, pageSize = 20, query = null }
+  { current = 1, pageSize = 10, query = null }
 ) {
   return new Promise((resolve, reject) => {
-    getTableDataForQuery(tableName, query)
+    getTableDataForQuery(tableName, { query })
       .then((allData) => {
         const total = allData.length;
         const preTotal = (current - 1) * pageSize;
         if (current * pageSize > total) {
-          if (preTotal > total) {
+          if (preTotal < total) {
             resolve(
               setPageData(current, pageSize, total, allData.splice(preTotal))
             );

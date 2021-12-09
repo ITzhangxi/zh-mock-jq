@@ -27,7 +27,7 @@ export function storageSyncGet(key = null) {
     try {
       if (![null, undefined].includes(key)) key = key + "";
       chrome.storage.sync.get(key, (item) => {
-        if (isObject(item) && Object.keys(items).length) {
+        if (isObject(item) && Object.keys(item).length) {
           resolve(item);
         } else {
           resolve(null);
