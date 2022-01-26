@@ -1,5 +1,5 @@
 chrome.devtools.panels.create(
-  "zh-mock",
+  "zh-mock-jq",
   "img/icon.png",
   "pages/panel/dist/index.html",
   function (panel) {
